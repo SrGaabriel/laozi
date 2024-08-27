@@ -1,6 +1,7 @@
 type token =
   | INT of int
   | IDENTIFIER of string
+  | STRING of string
   | PLUS
   | MINUS
   | TIMES
@@ -20,6 +21,7 @@ type token =
 let string_of_token = function
   | INT i -> "INT " ^ string_of_int i
   | IDENTIFIER s -> "IDENTIFIER " ^ s
+  | STRING s -> "STRING " ^ s
   | PLUS -> "PLUS"
   | MINUS -> "MINUS"
   | TIMES -> "TIMES"

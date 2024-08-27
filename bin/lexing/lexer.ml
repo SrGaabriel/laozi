@@ -23,6 +23,15 @@ let rec lexer input pos =
     | '-' -> Tokens.MINUS :: lexer input (pos + 1)
     | '*' -> Tokens.TIMES :: lexer input (pos + 1)
     | '/' -> Tokens.DIVISION :: lexer input (pos + 1)
+    | '"' ->
+      let rec read_string acc pos =
+        if pos < String.length input && String.get input pos <> '"' then
+          read_string (acc ^ String.make 1 (String.get input pos)) (pos + 1)
+        else
+          acc, pos
+      in
+      let string, new_pos = read_string "" (pos + 1) in
+      Tokens.STRING string :: lexer input (new_pos + 1)
     | _ ->
       if is_digit char then
         let rec read_number acc pos =
