@@ -1,21 +1,17 @@
-
-let read_file filename =
-  let in_channel = open_in filename in
+let read_file_text filename =
+  let lines = ref [] in
+  let chan = open_in filename in
   try
-    let rec read_lines () =
-      try
-        let line = input_line in_channel in
-        line :: read_lines ()
-      with End_of_file -> []
-    in
-    let lines = read_lines () in
-    close_in in_channel;
-    lines
-  with e ->
-    close_in_noerr in_channel;
-    raise e
+    while true; do
+      lines := input_line chan :: !lines
+    done;
+    ""
+  with End_of_file ->
+    close_in chan;
+    String.concat "\n" (List.rev !lines)
 
 let () =
   let filename = "example.lao" in
-  let lines = read_file filename in
-  List.iter print_endline lines
+  let text = read_file_text filename in
+  let lexed = Lexing.Lexer.lexer text 0 in
+  List.iter (fun token -> print_endline (Lexing.Tokens.string_of_token token)) lexed

@@ -1,4 +1,4 @@
 (executable
  (public_name laozi)
  (name main)
- (libraries laozi))
+ (libraries laozi lexing))
