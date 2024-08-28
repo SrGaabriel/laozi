@@ -8,21 +8,21 @@ let is_letter = function
 
 let rec lexer input pos =
   if pos >= String.length input then
-    [Tokens.EOF]
+    [{ Tokens.kind = EOF; value = ""; position = pos }]
   else
     let char = String.get input pos in
     match char with
     | ' ' | '\n' | '\t' -> lexer input (pos + 1)
-    | '(' -> Tokens.OPENING_PARENTHESIS :: lexer input (pos + 1)
-    | ')' -> Tokens.CLOSING_PARENTHESIS :: lexer input (pos + 1)
-    | '[' -> Tokens.OPENING_BRACKET :: lexer input (pos + 1)
-    | ']' -> Tokens.CLOSING_BRACKET :: lexer input (pos + 1)
-    | ';' -> Tokens.SEMICOLON :: lexer input (pos + 1)
-    | ',' -> Tokens.COMMA :: lexer input (pos + 1)
-    | '+' -> Tokens.PLUS :: lexer input (pos + 1)
-    | '-' -> Tokens.MINUS :: lexer input (pos + 1)
-    | '*' -> Tokens.TIMES :: lexer input (pos + 1)
-    | '/' -> Tokens.DIVISION :: lexer input (pos + 1)
+    | '(' -> { Tokens.kind = OPENING_PARENTHESIS; value = "("; position = pos } :: lexer input (pos + 1)
+    | ')' -> { Tokens.kind = CLOSING_PARENTHESIS; value = ")"; position = pos } :: lexer input (pos + 1)
+    | '[' -> { Tokens.kind = OPENING_BRACKET; value = "["; position = pos } :: lexer input (pos + 1)
+    | ']' -> { Tokens.kind = CLOSING_BRACKET; value = "]"; position = pos } :: lexer input (pos + 1)
+    | ';' -> { Tokens.kind = SEMICOLON; value = ";"; position = pos } :: lexer input (pos + 1)
+    | ',' -> { Tokens.kind = COMMA; value = ","; position = pos } :: lexer input (pos + 1)
+    | '+' -> { Tokens.kind = PLUS; value = "+"; position = pos } :: lexer input (pos + 1)
+    | '-' -> { Tokens.kind = MINUS; value = "-"; position = pos } :: lexer input (pos + 1)
+    | '*' -> { Tokens.kind = TIMES; value = "*"; position = pos } :: lexer input (pos + 1)
+    | '/' -> { Tokens.kind = DIVISION; value = "/"; position = pos } :: lexer input (pos + 1)
     | '"' ->
       let rec read_string acc pos =
         if pos < String.length input && String.get input pos <> '"' then
@@ -31,17 +31,17 @@ let rec lexer input pos =
           acc, pos
       in
       let string, new_pos = read_string "" (pos + 1) in
-      Tokens.STRING string :: lexer input (new_pos + 1)
+      { Tokens.kind = STRING; value = string; position = pos } :: lexer input (new_pos + 1)
     | _ ->
       if is_digit char then
         let rec read_number acc pos =
-          if pos < String.length input && is_digit(String.get input pos) then
+          if pos < String.length input && is_digit (String.get input pos) then
             read_number (acc ^ String.make 1 (String.get input pos)) (pos + 1)
           else
             acc, pos
         in
         let number, new_pos = read_number (String.make 1 char) (pos + 1) in
-        Tokens.INT(int_of_string number) :: lexer input new_pos
+        { Tokens.kind = INT; value = number; position = pos } :: lexer input new_pos
       else if is_letter char then
         let rec read_identifier acc pos =
           if pos < String.length input && (is_letter (String.get input pos) || is_digit (String.get input pos)) then
@@ -50,11 +50,13 @@ let rec lexer input pos =
             acc, pos
         in
         let identifier, new_pos = read_identifier (String.make 1 char) (pos + 1) in
-        match identifier with
-        | "if" -> Tokens.IF :: lexer input new_pos
-        | "else" -> Tokens.ELSE :: lexer input new_pos
-        | "true" -> Tokens.TRUE :: lexer input new_pos
-        | "false" -> Tokens.FALSE :: lexer input new_pos
-        | _ -> Tokens.IDENTIFIER identifier :: lexer input new_pos
+        let kind = match identifier with
+          | "if" -> Tokens.IF
+          | "else" -> Tokens.ELSE
+          | "true" -> Tokens.TRUE
+          | "false" -> Tokens.FALSE
+          | _ -> Tokens.IDENTIFIER
+        in
+        { Tokens.kind = kind; value = identifier; position = pos } :: lexer input new_pos
       else
         failwith ("Unexpected character: " ^ String.make 1 char)

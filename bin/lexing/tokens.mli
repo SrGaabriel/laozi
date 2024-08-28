@@ -1,7 +1,7 @@
-type token =
-  | INT of int
-  | IDENTIFIER of string
-  | STRING of string
+type token_kind =
+  | INT
+  | IDENTIFIER
+  | STRING
   | PLUS
   | MINUS
   | TIMES
@@ -17,5 +17,13 @@ type token =
   | TRUE
   | FALSE
   | EOF
+
+type token = {
+  kind: token_kind;
+  value: string;
+  position: int;
+}
+
+val string_of_token_kind : token_kind -> string
 
 val string_of_token : token -> string

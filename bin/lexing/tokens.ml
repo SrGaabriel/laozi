@@ -1,7 +1,7 @@
-type token =
-  | INT of int
-  | IDENTIFIER of string
-  | STRING of string
+type token_kind =
+  | INT
+  | IDENTIFIER
+  | STRING
   | PLUS
   | MINUS
   | TIMES
@@ -18,10 +18,16 @@ type token =
   | FALSE
   | EOF
 
-let string_of_token = function
-  | INT i -> "INT " ^ string_of_int i
-  | IDENTIFIER s -> "IDENTIFIER " ^ s
-  | STRING s -> "STRING " ^ s
+type token = {
+  kind: token_kind;
+  value: string;
+  position: int;
+}
+
+let string_of_token_kind = function
+  | INT -> "INT"
+  | IDENTIFIER -> "IDENTIFIER"
+  | STRING -> "STRING"
   | PLUS -> "PLUS"
   | MINUS -> "MINUS"
   | TIMES -> "TIMES"
@@ -37,3 +43,9 @@ let string_of_token = function
   | TRUE -> "TRUE"
   | FALSE -> "FALSE"
   | EOF -> "EOF"
+
+let string_of_token = fun token ->
+  Printf.sprintf "{ kind: %s, value: %s, position: %d }"
+    (string_of_token_kind token.kind)
+    token.value
+    token.position
