@@ -1,3 +1,4 @@
+
 let read_file_text filename =
   let lines = ref [] in
   let chan = open_in filename in
@@ -8,7 +9,7 @@ let read_file_text filename =
     ""
   with End_of_file ->
     close_in chan;
-    String.concat "\n" (List.rev !lines)
+    String.concat "\n" !lines
 
 let () =
   let filename = "example.lao" in
